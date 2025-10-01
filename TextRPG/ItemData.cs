@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 
 namespace TextRPG
 {
+     public enum ItemType
+     {
+          Armor,
+          Weapon,
+     }
+
      public enum ItemIndexes
      {
-          NovieArmor,
+          NoviceArmor,
           IronArmor,
           SpartaArmor,
           OldSword,
           bronzeAx,
           SpartaSpear,
-     }
-     public enum ItemType
-     {
-          Armor,
-          Weapon,
      }
 
      internal class ItemData

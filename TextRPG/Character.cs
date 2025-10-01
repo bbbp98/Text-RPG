@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,15 +12,19 @@ namespace TextRPG
 {
      internal class Character
      {
+          // 기본 캐릭터 스탯
+          private int atk = 10;
+          private int def = 5;
+
           int Level { get; set; }
-          int Attack { get; set; }
-          int EquipmentAttack { get; set; }
-          int EquipmentDepence { get; set; }
-          int Depence { get; set; }
-          int Hp { get; set; }
+          public int Attack { get; set; }
+          public int Defence { get; set; }
+          public int Hp { get; set; }
+
           public int Gold { get; set; }
           public int Exp { get; set; }
           public int Stamina { get; set; }
+
 
           string Name { get; set; }
           string Job { get; set; }
@@ -31,12 +36,10 @@ namespace TextRPG
                Level = 1;
                Name = name;
                Job = job;
-               Attack = 10;
-               Depence = 5;
+               Attack = atk;
+               Defence = def;
                Hp = 100;
                Gold = 15000;
-               EquipmentAttack = 0;
-               EquipmentDepence = 0;
                Exp = 0;
                Stamina = 100;
 
@@ -45,35 +48,32 @@ namespace TextRPG
 
           public void ShowInfo()
           {
-               EquipmentAttack = 0;
-               EquipmentDepence = 0;
-
                foreach (Item item in EquiptedItems)
                {
                     if (item != null && item.Type == ItemType.Weapon)
-                         EquipmentAttack += item.Value;
+                         Attack = atk + item.Value;
 
                     if (item != null && item.Type == ItemType.Armor)
-                         EquipmentDepence += item.Value;
+                         Defence = def + item.Value;
                }
 
                Console.WriteLine($"Lv. {Level}");
                Console.WriteLine($"{Name} ( {Job} )");
 
                Console.Write($"공격력 : {Attack} ");
-               if (EquipmentAttack > 0)
+               if (EquiptedItems[(int)ItemType.Weapon].Value > 0)
                {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write($"(+{EquipmentAttack})");
+                    Console.Write($"(+{EquiptedItems[(int)ItemType.Weapon].Value})");
                     Console.ForegroundColor = ConsoleColor.White;
                }
                Console.WriteLine();
 
-               Console.Write($"방어력 : {Depence} ");
-               if (EquipmentDepence > 0)
+               Console.Write($"방어력 : {Defence} ");
+               if (EquiptedItems[(int)ItemType.Armor].Value > 0)
                {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write($"(+{EquipmentDepence})");
+                    Console.Write($"(+{EquiptedItems[(int)ItemType.Armor].Value})");
                     Console.ForegroundColor = ConsoleColor.White;
                }
                Console.WriteLine();
@@ -87,6 +87,12 @@ namespace TextRPG
           public bool CheckStamina(int stamina)
           {
                return (Stamina >= stamina);
+          }
+
+          public void Update()
+          {
+               Attack = atk + EquiptedItems[(int)ItemType.Weapon].Value;
+               Defence = def + EquiptedItems[(int)ItemType.Armor].Value;
           }
      }
 }

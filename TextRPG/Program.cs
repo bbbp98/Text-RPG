@@ -19,6 +19,8 @@ namespace TextRPG
                ShopScene,
                PurchaseItemScene,
                SellingItemScene,
+               DungeonEntranceScene,
+               DungeonClearScene,
           }
 
           const string WELCOME_MESSAGE =
@@ -30,6 +32,10 @@ namespace TextRPG
 
           static Character character = new Character("Chad", "전사");
 
+          // dungeon list
+          static List<Dungeon> dungeons = new List<Dungeon>();
+          static Dungeon nowDungeon;
+
           // item list
           static List<Item> inventory = new List<Item>();
           static List<Item> items = new List<Item>();
@@ -38,6 +44,12 @@ namespace TextRPG
 
           static void Main(string[] args)
           {
+               // dungeon initialize
+               foreach (Difficulty diff in Enum.GetValues(typeof(Difficulty)))
+               {
+                    dungeons.Add(new Dungeon(diff));
+               }
+
                // item 집어넣기
                foreach (ItemIndexes idx in Enum.GetValues(typeof(ItemIndexes)))
                {
@@ -49,7 +61,7 @@ namespace TextRPG
 
                // 기본 장비 장착
 
-               inventory.Add(items[(int)ItemIndexes.NovieArmor]);
+               inventory.Add(items[(int)ItemIndexes.NoviceArmor]);
                inventory[0].HasItem = true;
                inventory[0].IsEquipped = true;
                inventory.Add(items[(int)ItemIndexes.OldSword]);
@@ -63,6 +75,7 @@ namespace TextRPG
                {
                     PrintBehaviorList();
                     InputBehavior();
+                    character.Update();
                }
           }
 
@@ -102,6 +115,12 @@ namespace TextRPG
                          break;
                     case Scene.SellingItemScene:
                          SellingItemScene();
+                         break;
+                    case Scene.DungeonEntranceScene:
+                         DungeonEntranceScene();
+                         break;
+                    case Scene.DungeonClearScene:
+                         DungeonClearScene();
                          break;
                }
 
@@ -157,8 +176,15 @@ namespace TextRPG
                     case Scene.SellingItemScene:
                          SellingItemSceneInput(input);
                          break;
+                    case Scene.DungeonEntranceScene:
+                         DungeonEntranceSceneInput(input);
+                         break;
+                    case Scene.DungeonClearScene:
+                         DungeonClearSceneInput(input);
+                         break;
                }
           }
+
 
           static void StartScene()
           {
@@ -170,10 +196,12 @@ namespace TextRPG
                Console.WriteLine("4. 마을 순찰하기");
                Console.WriteLine("5. 훈련하기");
                Console.WriteLine("6. 상점");
+               Console.WriteLine("7. 던전입장");
                Console.WriteLine("0. 종료하기");
 
                Console.WriteLine();
           }
+
 
           static void StartSceneInput(byte input)
           {
@@ -201,6 +229,9 @@ namespace TextRPG
                     case 6:
                          scene = Scene.ShopScene;
                          break;
+                    case 7:
+                         scene = Scene.DungeonEntranceScene;
+                         break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
                          Console.WriteLine("잘못된 입력입니다.\n");
@@ -209,6 +240,7 @@ namespace TextRPG
                }
 
           }
+
 
           static void PlayerInfoScene()
           {
@@ -220,6 +252,7 @@ namespace TextRPG
                Console.WriteLine("0. 나가기");
                Console.WriteLine();
           }
+
 
           static void PlayerInfoSceneInput(byte input)
           {
@@ -237,6 +270,7 @@ namespace TextRPG
                }
 
           }
+
 
           static void InventoryScene()
           {
@@ -259,6 +293,7 @@ namespace TextRPG
                Console.WriteLine();
           }
 
+
           static void InventorySceneInput(byte input)
           {
                switch (input)
@@ -279,6 +314,7 @@ namespace TextRPG
                          break;
                }
           }
+
 
           static void InventorySortScene()
           {
@@ -302,6 +338,7 @@ namespace TextRPG
                Console.WriteLine("0. 나가기");
                Console.WriteLine();
           }
+
 
           static void InventorySortSceneInput(byte input)
           {
@@ -345,6 +382,7 @@ namespace TextRPG
                }
           }
 
+
           static void EquipmentScene()
           {
                Console.WriteLine("인벤토리");
@@ -366,6 +404,7 @@ namespace TextRPG
                Console.WriteLine("0. 나가기");
                Console.WriteLine();
           }
+
 
           static void EquipmentSceneInput(byte input)
           {
@@ -389,7 +428,7 @@ namespace TextRPG
                     case 6:
                          // 장비 교체
                          if (character.EquiptedItems[select] != null) // character.EquiptedItems에 null이 있을 때 처리
-                              character.EquiptedItems[select].IsEquipped = false;   
+                              character.EquiptedItems[select].IsEquipped = false;
                          character.EquiptedItems[select] = inventory[input - 1];
                          character.EquiptedItems[select].IsEquipped = true;
                          break;
@@ -400,6 +439,7 @@ namespace TextRPG
                          break;
                }
           }
+
 
           static void AdventureScene()
           {
@@ -434,6 +474,7 @@ namespace TextRPG
                Console.WriteLine();
           }
 
+
           static void AdventureSceneInput(byte input)
           {
                switch (input)
@@ -450,6 +491,7 @@ namespace TextRPG
                          break;
                }
           }
+
 
           static void PatrolScene()
           {
@@ -511,6 +553,7 @@ namespace TextRPG
                Console.WriteLine();
           }
 
+
           static void PatrolSceneInput(byte input)
           {
                switch (input)
@@ -527,6 +570,7 @@ namespace TextRPG
                          break;
                }
           }
+
 
           static void TrainingScene()
           {
@@ -573,6 +617,7 @@ namespace TextRPG
                Console.WriteLine();
           }
 
+
           static void TrainingSceneInput(byte input)
           {
                switch (input)
@@ -589,6 +634,7 @@ namespace TextRPG
                          break;
                }
           }
+
 
           static void ShopScene()
           {
@@ -637,6 +683,7 @@ namespace TextRPG
                }
           }
 
+
           static void PurchaseItemScene()
           {
                Console.WriteLine("상점 - 아이템 구매");
@@ -662,6 +709,7 @@ namespace TextRPG
                Console.WriteLine();
           }
 
+
           static void PurchaseItemSceneInput(byte input)
           {
                switch (input)
@@ -676,55 +724,6 @@ namespace TextRPG
                     case 5:
                     case 6:
                          Purchase(input);
-                         break;
-                    default:
-                         Console.ForegroundColor = ConsoleColor.Red;
-                         Console.WriteLine("잘못된 입력입니다.\n");
-                         Console.ForegroundColor = ConsoleColor.White;
-                         break;
-               }
-          }
-
-          static void SellingItemScene()
-          {
-               Console.WriteLine("상점 - 아이템 판매");
-               Console.WriteLine("필요한 아이템을 판매할 수 있는 상점입니다.");
-               Console.WriteLine();
-
-               Console.WriteLine("[보유 골드]");
-               Console.ForegroundColor = ConsoleColor.Yellow;
-               Console.WriteLine($"{character.Gold} G");
-               Console.ForegroundColor = ConsoleColor.White;
-               Console.WriteLine();
-
-               Console.WriteLine("[아이템 목록]");
-               int i = 1;
-               foreach (Item item in inventory)
-               {
-                    Console.Write($"- {i++} ");
-                    item.ShowInfo(scene);
-               }
-               Console.WriteLine();
-
-               Console.WriteLine("0. 나가기");
-               Console.WriteLine();
-          }
-
-          static void SellingItemSceneInput(byte input)
-          {
-               switch (input)
-               {
-                    case 0:
-                         scene = Scene.ShopScene;
-                         break;
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                         // 판매 메서드
-                         Selling(input);
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -768,6 +767,58 @@ namespace TextRPG
                }
           }
 
+
+          static void SellingItemScene()
+          {
+               Console.WriteLine("상점 - 아이템 판매");
+               Console.WriteLine("필요한 아이템을 판매할 수 있는 상점입니다.");
+               Console.WriteLine();
+
+               Console.WriteLine("[보유 골드]");
+               Console.ForegroundColor = ConsoleColor.Yellow;
+               Console.WriteLine($"{character.Gold} G");
+               Console.ForegroundColor = ConsoleColor.White;
+               Console.WriteLine();
+
+               Console.WriteLine("[아이템 목록]");
+               int i = 1;
+               foreach (Item item in inventory)
+               {
+                    Console.Write($"- {i++} ");
+                    item.ShowInfo(scene);
+               }
+               Console.WriteLine();
+
+               Console.WriteLine("0. 나가기");
+               Console.WriteLine();
+          }
+
+
+          static void SellingItemSceneInput(byte input)
+          {
+               switch (input)
+               {
+                    case 0:
+                         scene = Scene.ShopScene;
+                         break;
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                         // 판매 메서드
+                         Selling(input);
+                         break;
+                    default:
+                         Console.ForegroundColor = ConsoleColor.Red;
+                         Console.WriteLine("잘못된 입력입니다.\n");
+                         Console.ForegroundColor = ConsoleColor.White;
+                         break;
+               }
+          }
+
+
           static void Selling(byte input)
           {
                // 인벤토리에 아이템이 없는데 입력이 들어올 경우
@@ -798,5 +849,124 @@ namespace TextRPG
                Console.WriteLine($"{item.Name}을(를) 판매했습니다. {price} G를 획득했습니다.");
                Console.WriteLine();
           }
+
+
+          static void DungeonEntranceScene()
+          {
+               Console.WriteLine("던전입장");
+               Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.");
+               Console.WriteLine();
+
+               // 난이도 별 던전 
+               int i = 1;
+               foreach (Dungeon dungeon in dungeons)
+               {
+                    Console.Write($"{i++}. ");
+                    dungeon.ShowInfo();
+               }
+
+               Console.WriteLine("0. 나가기");
+               Console.WriteLine();
+          }
+
+
+          static void DungeonEntranceSceneInput(byte input)
+          {
+               switch (input)
+               {
+                    case 0:
+                         scene = Scene.StartScene;
+                         break;
+                    case 1:
+                    case 2:
+                    case 3:
+                         // load dungeon clear scene
+                         scene = Scene.DungeonClearScene;
+                         nowDungeon = dungeons[input - 1];
+                         break;
+                    default:
+                         Console.ForegroundColor = ConsoleColor.Red;
+                         Console.WriteLine("잘못된 입력입니다.\n");
+                         Console.ForegroundColor = ConsoleColor.White;
+                         break;
+               }
+          }
+
+          static void DungeonClearScene()
+          {
+               Random rand = new Random();
+               // 20 ~ 35 랜덤으로 체력 감소
+               int hpDecrease = rand.Next(20, 36);
+               int defDiff = nowDungeon.RequiredDef - character.Defence;
+
+               // 던전 입장으로 소모되는 체력
+               int hpBefore = character.Hp;
+               character.Hp -= (hpDecrease + defDiff);
+
+               // 권장 방어력보다 낮은 경우
+               if (defDiff > 0)
+               {
+                    int randNum = rand.Next(0, 10);
+
+                    // fail clear
+                    if (randNum < 4)
+                    {
+                         Console.ForegroundColor = ConsoleColor.Red;
+                         Console.WriteLine("던전 클리어 실패");
+                         Console.WriteLine($"{nowDungeon.Name}을 클리어 하지 못했습니다.");
+                         Console.WriteLine();
+                         Console.ForegroundColor = ConsoleColor.White;
+
+                         Console.WriteLine("[탐험 결과]");
+                         Console.WriteLine($"체력 {hpBefore} -> {character.Hp}");
+                         Console.WriteLine();
+                         Console.WriteLine("1. 다시하기");
+                         Console.WriteLine("0. 나가기");
+                         Console.WriteLine();
+                         return;
+                    }
+               }
+
+               // clear
+               float bonus = rand.Next(character.Attack, character.Attack * 2) * 0.01f;
+               bonus = nowDungeon.RewardGold * bonus;
+               float clearGold = nowDungeon.RewardGold + bonus;
+
+               int goldBefore = character.Gold;
+               character.Gold += (int)clearGold;
+               character.Exp += nowDungeon.RewardExp;
+
+               Console.WriteLine("던전 클리어");
+               Console.WriteLine("축하합니다!!");
+               Console.WriteLine($"{nowDungeon.Name}을 클리어 하였습니다");
+               Console.WriteLine();
+
+               Console.WriteLine("[탐험 결과]");
+               Console.WriteLine($"체력 {hpBefore} -> {character.Hp}");
+               Console.WriteLine($"Gold {goldBefore} G -> {character.Gold} G");
+               Console.WriteLine();
+
+               Console.WriteLine("1. 다시하기");
+               Console.WriteLine("0. 나가기");
+               Console.WriteLine();
+          }
+
+          static void DungeonClearSceneInput(byte input)
+          {
+               switch (input)
+               {
+                    case 0:
+                         scene = Scene.DungeonEntranceScene;
+                         break;
+                    case 1:
+                         break;
+                    default:
+                         Console.ForegroundColor = ConsoleColor.Red;
+                         Console.WriteLine("잘못된 입력입니다.\n");
+                         Console.ForegroundColor = ConsoleColor.White;
+                         break;
+               }
+          }
+
      }
 }
