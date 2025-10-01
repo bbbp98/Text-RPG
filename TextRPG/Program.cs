@@ -130,8 +130,8 @@ namespace TextRPG
 
                     string[] valueType =
                     {
-                         "공격력",
                          "방어력",
+                         "공격력",
                     };
 
                     if (HasEquipped)
@@ -217,22 +217,6 @@ namespace TextRPG
                     return true;
                }
           }
-
-          //static void SortItem(SortType type)
-          //{
-          //     switch (type)
-          //     {
-          //          case SortType.Name:
-          //               itemLists.Sort();
-          //               break;
-          //          case SortType.Equip:
-          //               break;
-          //          case SortType.Attack:
-          //               break;
-          //          case SortType.Defence:
-          //               break;
-          //     }
-          //}
 
           static void PrintBehaviorList()
           {
@@ -493,10 +477,10 @@ namespace TextRPG
                          // ThenBy를 사용하면 조건을 추가할 수 있음
                          // ~~Descending을 사용하면 내림차순으로 바꿀 수 있음
                          // 기본 OrderBy, ThenBy는 오름차순
-                         itemLists = itemLists.OrderBy(p => p.Type).ThenByDescending(p => p.Value).ToList();
+                         itemLists = itemLists.OrderByDescending(p => p.Type).ThenByDescending(p => p.Value).ToList();
                          break;
                     case 4:
-                         itemLists = itemLists.OrderByDescending(p => p.Type).ThenByDescending(p => p.Value).ToList();
+                         itemLists = itemLists.OrderBy(p => p.Type).ThenByDescending(p => p.Value).ToList();
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
