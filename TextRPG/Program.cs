@@ -17,30 +17,6 @@ namespace TextRPG
                TrainingScene,
           }
 
-          static string[] itemNames =
-          {
-               "무쇠갑옷",
-               "스파르타의 갑옷",
-               "스파르타의 창",
-               "낡은 검",
-          };
-
-          static string[] itemDescriptions =
-          {
-               "무쇠로 만들어져 튼튼한 갑옷입니다.",
-               "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.",
-               "스파르타의 전사들이 사용했다는 전설의 창입니다.",
-               "쉽게 볼 수 있는 낡은 검 입니다.",
-          };
-
-          static int[] itemValues =
-          {
-               5,
-               10,
-               7,
-               2,
-          };
-
           const string WELCOME_MESSAGE =
           "스파르타 마을에 오신 여러분 환영합니다.\n" +
           "이곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.\n";
@@ -49,22 +25,23 @@ namespace TextRPG
           static private Scene scene = Scene.StartScene;
 
           static Character character = new Character("Chad", "전사");
-          static List<Item> itemLists = new List<Item>();
+          static ItemData itemData = new ItemData();
+          static List<Item> inveotory = new List<Item>();
 
           static int needStamina = 0;
 
           static void Main(string[] args)
           {
-               itemLists.Add(new Item(itemNames[(int)ItemIndexes.IronArmor], ItemType.Armor, itemValues[(int)ItemIndexes.IronArmor], itemDescriptions[(int)ItemIndexes.IronArmor]));
-               itemLists.Add(new Item(itemNames[(int)ItemIndexes.SpartaArmor], ItemType.Armor, itemValues[(int)ItemIndexes.SpartaArmor], itemDescriptions[(int)ItemIndexes.SpartaArmor])); ;
-               itemLists.Add(new Item(itemNames[(int)ItemIndexes.SpartaSpear], ItemType.Weapon, itemValues[(int)ItemIndexes.SpartaSpear], itemDescriptions[(int)ItemIndexes.SpartaSpear]));
-               itemLists.Add(new Item(itemNames[(int)ItemIndexes.OldSword], ItemType.Weapon, itemValues[(int)ItemIndexes.OldSword], itemDescriptions[(int)ItemIndexes.OldSword]));
+               inveotory.Add(new Item(itemData.itemNames[(int)ItemIndexes.IronArmor], ItemType.Armor, itemData.itemValues[(int)ItemIndexes.IronArmor], itemData.itemDescriptions[(int)ItemIndexes.IronArmor]));
+               inveotory.Add(new Item(itemData.itemNames[(int)ItemIndexes.SpartaArmor], ItemType.Armor, itemData.itemValues[(int)ItemIndexes.SpartaArmor], itemData.itemDescriptions[(int)ItemIndexes.SpartaArmor])); ;
+               inveotory.Add(new Item(itemData.itemNames[(int)ItemIndexes.SpartaSpear], ItemType.Weapon, itemData.itemValues[(int)ItemIndexes.SpartaSpear], itemData.itemDescriptions[(int)ItemIndexes.SpartaSpear]));
+               inveotory.Add(new Item(itemData.itemNames[(int)ItemIndexes.OldSword], ItemType.Weapon, itemData.itemValues[(int)ItemIndexes.OldSword], itemData.itemDescriptions[(int)ItemIndexes.OldSword]));
 
                // 기본 장비 장착
-               character.EquiptedItems.Add(itemLists[(int)ItemIndexes.IronArmor]);
-               itemLists[(int)ItemIndexes.IronArmor].HasEquipped = true;
-               character.EquiptedItems.Add(itemLists[(int)ItemIndexes.OldSword]);
-               itemLists[(int)ItemIndexes.OldSword].HasEquipped = true;
+               character.EquiptedItems.Add(inveotory[(int)ItemIndexes.IronArmor]);
+               inveotory[(int)ItemIndexes.IronArmor].HasEquipped = true;
+               character.EquiptedItems.Add(inveotory[(int)ItemIndexes.OldSword]);
+               inveotory[(int)ItemIndexes.OldSword].HasEquipped = true;
 
                while (isRunning)
                {
@@ -241,7 +218,7 @@ namespace TextRPG
                Console.WriteLine("[아이템 목록]");
                Console.WriteLine();
 
-               foreach (Item item in itemLists)
+               foreach (Item item in inveotory)
                {
                     item.ShowInfo();
                }
@@ -286,7 +263,7 @@ namespace TextRPG
                Console.WriteLine("[아이템 목록]");
                Console.WriteLine();
 
-               foreach (Item item in itemLists)
+               foreach (Item item in inveotory)
                {
                     item.ShowInfo();
                }
@@ -316,7 +293,7 @@ namespace TextRPG
                          // 람다식 버전
                          //itemLists.Sort((x, y) => x.Name.CompareTo(y.Name));
 
-                         itemLists = itemLists.OrderBy(p => p.Name).ToList();
+                         inveotory = inveotory.OrderBy(p => p.Name).ToList();
                          break;
                     case 2:
                          // 장착순 정렬
@@ -326,16 +303,16 @@ namespace TextRPG
                          // 람다식에서 x, y 위치에 따라 true먼저, false먼저 결정 가능
 
                          // LINQ .OrderBy버전
-                         itemLists = itemLists.OrderByDescending(p => p.HasEquipped).ToList();
+                         inveotory = inveotory.OrderByDescending(p => p.HasEquipped).ToList();
                          break;
                     case 3:
                          // ThenBy를 사용하면 조건을 추가할 수 있음
                          // ~~Descending을 사용하면 내림차순으로 바꿀 수 있음
                          // 기본 OrderBy, ThenBy는 오름차순
-                         itemLists = itemLists.OrderByDescending(p => p.Type).ThenByDescending(p => p.Value).ToList();
+                         inveotory = inveotory.OrderByDescending(p => p.Type).ThenByDescending(p => p.Value).ToList();
                          break;
                     case 4:
-                         itemLists = itemLists.OrderBy(p => p.Type).ThenByDescending(p => p.Value).ToList();
+                         inveotory = inveotory.OrderBy(p => p.Type).ThenByDescending(p => p.Value).ToList();
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -355,7 +332,7 @@ namespace TextRPG
                Console.WriteLine();
 
                int i = 1;
-               foreach (Item item in itemLists)
+               foreach (Item item in inveotory)
                {
                     Console.Write($"- {i} ");
                     item.ShowInfo();
@@ -377,7 +354,7 @@ namespace TextRPG
                int select = 0;
 
                if (input > 0)
-                    select = (int)itemLists[input - 1].Type;
+                    select = (int)inveotory[input - 1].Type;
 
 
                // 장착하면 무조건 그 장비가 장착, 기존에 장착 중이던 장비는 해제
@@ -391,7 +368,7 @@ namespace TextRPG
                          if (character.EquiptedItems[select] != null)
                               character.EquiptedItems[select].HasEquipped = false;
 
-                         character.EquiptedItems[select] = itemLists[(int)ItemIndexes.IronArmor];
+                         character.EquiptedItems[select] = inveotory[(int)ItemIndexes.IronArmor];
                          character.EquiptedItems[select].HasEquipped = true;
                          break;
                     // 스파르타 갑옷
@@ -399,7 +376,7 @@ namespace TextRPG
                          if (character.EquiptedItems[select] != null)
                               character.EquiptedItems[select].HasEquipped = false;
 
-                         character.EquiptedItems[select] = itemLists[(int)ItemIndexes.SpartaArmor];
+                         character.EquiptedItems[select] = inveotory[(int)ItemIndexes.SpartaArmor];
                          character.EquiptedItems[select].HasEquipped = true;
                          break;
                     // 스파르타 갑옷
@@ -407,7 +384,7 @@ namespace TextRPG
                          if (character.EquiptedItems[select] != null)
                               character.EquiptedItems[select].HasEquipped = false;
 
-                         character.EquiptedItems[select] = itemLists[(int)ItemIndexes.SpartaSpear];
+                         character.EquiptedItems[select] = inveotory[(int)ItemIndexes.SpartaSpear];
                          character.EquiptedItems[select].HasEquipped = true;
                          break;
                     // 낡은 검
@@ -415,7 +392,7 @@ namespace TextRPG
                          if (character.EquiptedItems[select] != null)
                               character.EquiptedItems[select].HasEquipped = false;
 
-                         character.EquiptedItems[select] = itemLists[(int)ItemIndexes.OldSword];
+                         character.EquiptedItems[select] = inveotory[(int)ItemIndexes.OldSword];
                          character.EquiptedItems[select].HasEquipped = true;
                          break;
 

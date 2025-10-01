@@ -12,14 +12,6 @@ namespace TextRPG
           Weapon,
      }
 
-     public enum ItemIndexes
-     {
-          IronArmor,
-          SpartaArmor,
-          SpartaSpear,
-          OldSword,
-     }
-
      internal class Item
      {
           public string Name { get; set; }
@@ -43,9 +35,9 @@ namespace TextRPG
 
                string[] valueType =
                {
-                         "방어력",
-                         "공격력",
-                    };
+                    "방어력",
+                    "공격력",
+               };
 
                if (HasEquipped)
                     Console.Write($"{"[E]" + Name,-10}| ");
