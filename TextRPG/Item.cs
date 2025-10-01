@@ -6,45 +6,74 @@ using System.Threading.Tasks;
 
 namespace TextRPG
 {
-     public enum ItemType
-     {
-          Armor,
-          Weapon,
-     }
-
+     
      internal class Item
      {
           public string Name { get; set; }
           public ItemType Type { get; set; }
           public int Value { get; set; }
+          public int Price { get; set; }
           string Description { get; set; }
 
-          public bool HasEquipped { get; set; }
+          public bool IsEquipped { get; set; }
+          public bool HasItem{ get; set; }
 
-          public Item(string name, ItemType type, int value, string description)
+          public Item(ItemType type, ItemIndexes index)
           {
-               Name = name;
+               ItemData data = new ItemData();
+
+               Name = data.itemNames[(int)index];
                Type = type;
-               Value = value;
-               Description = description;
-               HasEquipped = false;
+               Value = data.itemValues[(int)index];
+               Price = data.itemPrices[(int)index];
+               Description = data.itemDescriptions[(int)index];
+               IsEquipped = false;
+               HasItem = false;
           }
 
           public void ShowInfo()
           {
-
                string[] valueType =
                {
                     "방어력",
                     "공격력",
                };
 
-               if (HasEquipped)
-                    Console.Write($"{"[E]" + Name,-10}| ");
+               if (IsEquipped)
+               {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("[E]");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write($"{Name,-7}| ");
+               }
                else
                     Console.Write($"{Name,-10}| ");
                Console.Write($"{valueType[(int)Type] + " +" + Value,-10}| ");
                Console.Write($"{Description,-30}");
+               Console.WriteLine();
+          }
+
+          public void ShowInfo(bool showPrice)
+          {
+               string[] valueType =
+               {
+                    "방어력",
+                    "공격력",
+               };
+
+               Console.Write($"{Name,-10}| ");
+               Console.Write($"{valueType[(int)Type] + " +" + Value,-10}| ");
+               Console.Write($"{Description,-30}");
+               
+               if (showPrice)
+               {
+                    Console.Write("| ");
+                    if (HasItem)
+                         Console.Write("구매 완료");
+                    else
+                         Console.Write($"{Price} G");
+               }
+
                Console.WriteLine();
           }
      }

@@ -34,7 +34,7 @@ namespace TextRPG
                Attack = 10;
                Depence = 5;
                Hp = 100;
-               Gold = 1500;
+               Gold = 15000;
                EquipmentAttack = 0;
                EquipmentDepence = 0;
                Exp = 0;
