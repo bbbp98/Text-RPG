@@ -17,133 +17,6 @@ namespace TextRPG
                TrainingScene,
           }
 
-          enum ItemType
-          {
-               Armor,
-               Weapon,
-          }
-
-          enum ItemIndexes
-          {
-               IronArmor,
-               SpartaArmor,
-               SpartaSpear,
-               OldSword,
-          }
-
-          enum SortType
-          {
-               Name,
-               Equip,
-               Attack,
-               Defence,
-          }
-
-          class Character
-          {
-               int Level { get; set; }
-               int Attack { get; set; }
-               int EquipmentAttack { get; set; }
-               int EquipmentDepence { get; set; }
-               int Depence { get; set; }
-               int Hp { get; set; }
-               public int Gold { get; set; }
-               public int Exp { get; set; }
-               public int Stamina { get; set; }
-
-               string Name { get; set; }
-               string Job { get; set; }
-
-               public List<Item> EquiptedItems { get; set; }
-
-               public Character(string name, string job)
-               {
-                    Level = 1;
-                    Name = name;
-                    Job = job;
-                    Attack = 10;
-                    Depence = 5;
-                    Hp = 100;
-                    Gold = 1500;
-                    EquipmentAttack = 0;
-                    EquipmentDepence = 0;
-                    Exp = 0;
-                    Stamina = 100;
-
-                    EquiptedItems = new List<Item>();
-               }
-
-               public void ShowInfo()
-               {
-                    EquipmentAttack = 0;
-                    EquipmentDepence = 0;
-
-                    foreach (Item item in EquiptedItems)
-                    {
-                         if (item != null && item.Type == ItemType.Weapon)
-                              EquipmentAttack += item.Value;
-
-                         if (item != null && item.Type == ItemType.Armor)
-                              EquipmentDepence += item.Value;
-                    }
-
-                    Console.WriteLine($"Lv. {Level}");
-                    Console.WriteLine($"{Name} ( {Job} )");
-
-                    Console.Write($"공격력 : {Attack} ");
-                    if (EquipmentAttack > 0)
-                         Console.Write($"(+{EquipmentAttack})");
-                    Console.WriteLine();
-
-                    Console.Write($"방어력 : {Depence} ");
-                    if (EquipmentDepence > 0)
-                         Console.Write($"(+{EquipmentDepence})");
-                    Console.WriteLine();
-
-                    Console.WriteLine($"체  력 : {Hp}");
-                    Console.WriteLine($"Gold : {Gold}");
-                    Console.WriteLine($"스태미나 : {Stamina}");
-                    Console.WriteLine();
-               }
-          }
-
-          class Item
-          {
-               public string Name { get; set; }
-               public ItemType Type { get; set; }
-               public int Value { get; set; }
-               string Description { get; set; }
-
-               public bool HasEquipped { get; set; }
-
-               public Item(string name, ItemType type, int value, string description)
-               {
-                    Name = name;
-                    Type = type;
-                    Value = value;
-                    Description = description;
-                    HasEquipped = false;
-               }
-
-               public void ShowInfo()
-               {
-
-                    string[] valueType =
-                    {
-                         "방어력",
-                         "공격력",
-                    };
-
-                    if (HasEquipped)
-                         Console.Write($"{"[E]" + Name,-10}| ");
-                    else
-                         Console.Write($"{Name,-10}| ");
-                    Console.Write($"{valueType[(int)Type] + " +" + Value,-10}| ");
-                    Console.Write($"{Description,-30}");
-                    Console.WriteLine();
-               }
-          }
-
           static string[] itemNames =
           {
                "무쇠갑옷",
@@ -197,24 +70,6 @@ namespace TextRPG
                {
                     PrintBehaviorList();
                     InputBehavior();
-               }
-          }
-
-          static bool CheckStamina(int stamina)
-          {
-               if (character.Stamina < stamina)
-               {
-                    Console.WriteLine("스태미나가 부족합니다.");
-                    Console.WriteLine();
-
-                    scene = Scene.StartScene;
-                    StartScene();
-
-                    return false;
-               }
-               else
-               {
-                    return true;
                }
           }
 
@@ -576,8 +431,16 @@ namespace TextRPG
           {
                needStamina = 10;
 
-               if (CheckStamina(needStamina) == false)
+               if (character.CheckStamina(needStamina) == false)
+               {
+                    Console.WriteLine("스태미나가 부족합니다.");
+                    Console.WriteLine();
+
+                    scene = Scene.StartScene;
+                    StartScene();
+
                     return;
+               }
 
                character.Stamina -= needStamina;
 
@@ -621,8 +484,16 @@ namespace TextRPG
           {
                needStamina = 5;
 
-               if (CheckStamina(needStamina) == false)
+               if (character.CheckStamina(needStamina) == false)
+               {
+                    Console.WriteLine("스태미나가 부족합니다.");
+                    Console.WriteLine();
+
+                    scene = Scene.StartScene;
+                    StartScene();
+
                     return;
+               }
 
                character.Stamina -= needStamina;
 
@@ -693,8 +564,16 @@ namespace TextRPG
           {
                needStamina = 15;
 
-               if (CheckStamina(needStamina) == false)
+               if (character.CheckStamina(needStamina) == false)
+               {
+                    Console.WriteLine("스태미나가 부족합니다.");
+                    Console.WriteLine();
+
+                    scene = Scene.StartScene;
+                    StartScene();
+
                     return;
+               }
 
                character.Stamina -= needStamina;
 
@@ -716,7 +595,6 @@ namespace TextRPG
                     Console.WriteLine("하기 싫다...훈련이...");
                     gettingExp = 30;
                }
-
 
                character.Exp += gettingExp;
                Console.WriteLine($"경험치를 {gettingExp} 획득했습니다.");
