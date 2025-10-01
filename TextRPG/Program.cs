@@ -18,6 +18,7 @@ namespace TextRPG
                TrainingScene,
                ShopScene,
                PurchaseItemScene,
+               SellingItemScene,
           }
 
           const string WELCOME_MESSAGE =
@@ -99,6 +100,9 @@ namespace TextRPG
                     case Scene.PurchaseItemScene:
                          PurchaseItemScene();
                          break;
+                    case Scene.SellingItemScene:
+                         SellingItemScene();
+                         break;
                }
 
 
@@ -150,7 +154,8 @@ namespace TextRPG
                     case Scene.PurchaseItemScene:
                          PurchaseItemSceneInput(input);
                          break;
-                    default:
+                    case Scene.SellingItemScene:
+                         SellingItemSceneInput(input);
                          break;
                }
           }
@@ -212,10 +217,7 @@ namespace TextRPG
                Console.WriteLine();
                character.ShowInfo();
 
-               //Console.ForegroundColor = ConsoleColor.Blue;
                Console.WriteLine("0. 나가기");
-               //Console.ForegroundColor = ConsoleColor.White;
-
                Console.WriteLine();
           }
 
@@ -251,12 +253,9 @@ namespace TextRPG
                }
                Console.WriteLine();
 
-               //Console.ForegroundColor = ConsoleColor.Blue;
                Console.WriteLine("1. 장착 관리");
                Console.WriteLine("2. 아이템 정렬");
                Console.WriteLine("0. 나가기");
-               //Console.ForegroundColor = ConsoleColor.White;
-
                Console.WriteLine();
           }
 
@@ -296,14 +295,11 @@ namespace TextRPG
                }
                Console.WriteLine();
 
-               //Console.ForegroundColor = ConsoleColor.Blue;
                Console.WriteLine("1. 이름");
                Console.WriteLine("2. 장착순");
                Console.WriteLine("3. 공격력");
                Console.WriteLine("4. 방어력");
                Console.WriteLine("0. 나가기");
-               //Console.ForegroundColor = ConsoleColor.White;
-
                Console.WriteLine();
           }
 
@@ -367,10 +363,7 @@ namespace TextRPG
 
                Console.WriteLine();
 
-               //Console.ForegroundColor = ConsoleColor.Blue;
                Console.WriteLine("0. 나가기");
-               //Console.ForegroundColor = ConsoleColor.White;
-
                Console.WriteLine();
           }
 
@@ -395,7 +388,8 @@ namespace TextRPG
                     case 5:
                     case 6:
                          // 장비 교체
-                         character.EquiptedItems[select].IsEquipped = false;
+                         if (character.EquiptedItems[select] != null) // character.EquiptedItems에 null이 있을 때 처리
+                              character.EquiptedItems[select].IsEquipped = false;   
                          character.EquiptedItems[select] = inventory[input - 1];
                          character.EquiptedItems[select].IsEquipped = true;
                          break;
@@ -435,11 +429,8 @@ namespace TextRPG
                     Console.WriteLine("아무 일도 일어나지 않았다.\n");
                }
 
-               //Console.ForegroundColor = ConsoleColor.Blue;
                Console.WriteLine("1. 랜덤 모험");
                Console.WriteLine("0. 나가기");
-               //Console.ForegroundColor = ConsoleColor.White;
-
                Console.WriteLine();
           }
 
@@ -515,11 +506,8 @@ namespace TextRPG
                }
                Console.WriteLine();
 
-               //Console.ForegroundColor = ConsoleColor.Blue;
                Console.WriteLine("1. 마을 순찰하기");
                Console.WriteLine("0. 나가기");
-               //Console.ForegroundColor = ConsoleColor.White;
-
                Console.WriteLine();
           }
 
@@ -580,11 +568,8 @@ namespace TextRPG
                Console.WriteLine($"경험치를 {gettingExp} 획득했습니다.");
 
                Console.WriteLine();
-               //Console.ForegroundColor = ConsoleColor.Blue;
                Console.WriteLine("1. 훈련하기");
                Console.WriteLine("0. 나가기");
-               //Console.ForegroundColor = ConsoleColor.White;
-
                Console.WriteLine();
           }
 
@@ -621,11 +606,12 @@ namespace TextRPG
                foreach (Item item in items)
                {
                     Console.Write("- ");
-                    item.ShowInfo(true);
+                    item.ShowInfo(scene);
                }
                Console.WriteLine();
 
                Console.WriteLine("1. 아이템 구매");
+               Console.WriteLine("2. 아이템 판매");
                Console.WriteLine("0. 나가기");
                Console.WriteLine();
           }
@@ -639,6 +625,9 @@ namespace TextRPG
                          break;
                     case 1:
                          scene = Scene.PurchaseItemScene;
+                         break;
+                    case 2:
+                         scene = Scene.SellingItemScene;
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -665,7 +654,7 @@ namespace TextRPG
                foreach (Item item in items)
                {
                     Console.Write($"- {i++} ");
-                    item.ShowInfo(true);
+                    item.ShowInfo(scene);
                }
                Console.WriteLine();
 
@@ -687,6 +676,55 @@ namespace TextRPG
                     case 5:
                     case 6:
                          Purchase(input);
+                         break;
+                    default:
+                         Console.ForegroundColor = ConsoleColor.Red;
+                         Console.WriteLine("잘못된 입력입니다.\n");
+                         Console.ForegroundColor = ConsoleColor.White;
+                         break;
+               }
+          }
+
+          static void SellingItemScene()
+          {
+               Console.WriteLine("상점 - 아이템 판매");
+               Console.WriteLine("필요한 아이템을 판매할 수 있는 상점입니다.");
+               Console.WriteLine();
+
+               Console.WriteLine("[보유 골드]");
+               Console.ForegroundColor = ConsoleColor.Yellow;
+               Console.WriteLine($"{character.Gold} G");
+               Console.ForegroundColor = ConsoleColor.White;
+               Console.WriteLine();
+
+               Console.WriteLine("[아이템 목록]");
+               int i = 1;
+               foreach (Item item in inventory)
+               {
+                    Console.Write($"- {i++} ");
+                    item.ShowInfo(scene);
+               }
+               Console.WriteLine();
+
+               Console.WriteLine("0. 나가기");
+               Console.WriteLine();
+          }
+
+          static void SellingItemSceneInput(byte input)
+          {
+               switch (input)
+               {
+                    case 0:
+                         scene = Scene.ShopScene;
+                         break;
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                         // 판매 메서드
+                         Selling(input);
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -722,12 +760,43 @@ namespace TextRPG
                     }
                     else
                     {
-                         Console.ForegroundColor= ConsoleColor.Red;
+                         Console.ForegroundColor = ConsoleColor.Red;
                          Console.WriteLine("보유 금액이 부족합니다.");
                          Console.ForegroundColor = ConsoleColor.White;
                          Console.WriteLine();
                     }
                }
+          }
+
+          static void Selling(byte input)
+          {
+               // 인벤토리에 아이템이 없는데 입력이 들어올 경우
+               if (inventory.Count == 0)
+               {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("판매할 수 있는 아이템이 없습니다.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    return;
+               }
+
+
+               Item item = inventory[input - 1];
+
+               int typeIdx = (int)item.Type;
+               // 장착중인 아이템인지 체크
+               // 판매는 그대로 진행, 장착 해제
+               if (character.EquiptedItems[typeIdx] == item)
+               {
+                    item.IsEquipped = false;
+                    item.HasItem = false;
+                    character.EquiptedItems[typeIdx] = null;
+               }
+
+               int price = (int)(item.Price * 0.85f);
+               character.Gold += price;
+               inventory.Remove(item);
+               Console.WriteLine($"{item.Name}을(를) 판매했습니다. {price} G를 획득했습니다.");
+               Console.WriteLine();
           }
      }
 }

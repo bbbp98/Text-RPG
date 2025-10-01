@@ -62,12 +62,20 @@ namespace TextRPG
 
                Console.Write($"공격력 : {Attack} ");
                if (EquipmentAttack > 0)
+               {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write($"(+{EquipmentAttack})");
+                    Console.ForegroundColor = ConsoleColor.White;
+               }
                Console.WriteLine();
 
                Console.Write($"방어력 : {Depence} ");
                if (EquipmentDepence > 0)
+               {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write($"(+{EquipmentDepence})");
+                    Console.ForegroundColor = ConsoleColor.White;
+               }
                Console.WriteLine();
 
                Console.WriteLine($"체  력 : {Hp}");

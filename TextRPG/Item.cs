@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TextRPG
 {
-     
+
      internal class Item
      {
           public string Name { get; set; }
@@ -16,7 +16,7 @@ namespace TextRPG
           string Description { get; set; }
 
           public bool IsEquipped { get; set; }
-          public bool HasItem{ get; set; }
+          public bool HasItem { get; set; }
 
           public Item(ItemType type, ItemIndexes index)
           {
@@ -53,7 +53,7 @@ namespace TextRPG
                Console.WriteLine();
           }
 
-          public void ShowInfo(bool showPrice)
+          public void ShowInfo(Program.Scene scene)
           {
                string[] valueType =
                {
@@ -64,14 +64,19 @@ namespace TextRPG
                Console.Write($"{Name,-10}| ");
                Console.Write($"{valueType[(int)Type] + " +" + Value,-10}| ");
                Console.Write($"{Description,-30}");
-               
-               if (showPrice)
+               Console.Write("| ");
+
+               if (scene == Program.Scene.ShopScene
+                    || scene == Program.Scene.PurchaseItemScene)
                {
-                    Console.Write("| ");
                     if (HasItem)
                          Console.Write("구매 완료");
                     else
                          Console.Write($"{Price} G");
+               }
+               else if (scene == Program.Scene.SellingItemScene)
+               {
+                    Console.Write($"{(int)(Price * 0.85f)} G");
                }
 
                Console.WriteLine();
