@@ -201,25 +201,6 @@ namespace TextRPG
 
                     Console.ForegroundColor = ConsoleColor.White;
                }
-
-               //Console.ForegroundColor = ConsoleColor.Cyan;
-
-               //Console.WriteLine("레벨업!!");
-               //Console.Write($"{"Level: ",-10}{Level,-5} => ");
-               //Exp -= RequireExp[Level - 1];
-               //Level++;
-               //Console.WriteLine(Level);
-
-               //Console.Write($"{"기본 공격력 : ",-10}{atk,-5} => ");
-               //atk += 0.5f;
-               //Console.WriteLine(atk);
-
-               //Console.Write($"{"기본 방어력 : ",-10}{def,-5} => ");
-               //def += 1f;
-               //Console.WriteLine(def);
-               //Console.WriteLine();
-
-               //Console.ForegroundColor = ConsoleColor.White;
           }
      }
 }

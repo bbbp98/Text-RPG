@@ -166,7 +166,7 @@ namespace TextRPG
 
           static public void Save()
           {
-               // save player infomation
+               // save character infomation
                string saveJson = JsonSerializer.Serialize(character, new JsonSerializerOptions
                {
                     WriteIndented = true // JSON 보기 좋게 저장
