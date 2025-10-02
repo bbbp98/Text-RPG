@@ -24,8 +24,6 @@ namespace TextRPG.Scenes
                     case 0:
                          SetScene(new DungeonEntranceScene(character));
                          break;
-                    case 1:
-                         break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
                          Console.WriteLine("잘못된 입력입니다.\n");
@@ -33,7 +31,8 @@ namespace TextRPG.Scenes
                          break;
                }
           }
-
+          // 던전클리어씬에 들어오기만 하면 (실패했을 때 빼고)
+          // 이상한 키를 눌러서 새로고침을 해도 보상이 들어감
           public override void Show()
           {
                Random rand = new Random();
@@ -67,15 +66,14 @@ namespace TextRPG.Scenes
                          Console.WriteLine("[탐험 결과]");
                          Console.WriteLine($"체력 {hpBefore} -> {character.Hp}");
                          Console.WriteLine();
-                         Console.WriteLine("1. 다시하기");
                          Console.WriteLine("0. 나가기");
                          Console.WriteLine();
                          return;
                     }
                }
 
-               // clear
 
+               // clear
                // Random().NextDouble() : 0.0 ~ 1.0 사이 랜덤 값 반환
                float bonus = (float)((rand.NextDouble() * character.Attack) + character.Attack);
                bonus *= 0.01f;
@@ -96,7 +94,6 @@ namespace TextRPG.Scenes
                Console.WriteLine($"Gold {goldBefore} G -> {character.Gold} G");
                Console.WriteLine();
 
-               Console.WriteLine("1. 다시하기");
                Console.WriteLine("0. 나가기");
           }
      }

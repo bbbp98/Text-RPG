@@ -25,8 +25,6 @@ namespace TextRPG.Scenes
                     case 0:
                          SetScene(new StartScene(character));
                          break;
-                    case 1:
-                         break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
                          Console.WriteLine("잘못된 입력입니다.\n");
@@ -63,7 +61,6 @@ namespace TextRPG.Scenes
                     Console.WriteLine("아무 일도 일어나지 않았다.\n");
                }
 
-               Console.WriteLine("1. 다시하기");
                Console.WriteLine("0. 나가기");
           }
      }

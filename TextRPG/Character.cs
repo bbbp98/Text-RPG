@@ -99,21 +99,6 @@ namespace TextRPG
                };
           }
 
-          public Character(int level, float attack, float defence, int gold, int exp, int hp, int stamina, string name, string job, List<Item> inventory, List<Item> items)
-          {
-               Level = level;
-               Attack = attack;
-               Defence = defence;
-               Gold = gold;
-               Exp = exp;
-               Hp = hp;
-               Stamina = stamina;
-               Name = name;
-               Job = job;
-               Inventory = inventory;
-               EquiptedItems = items;
-          }
-
           public void ShowInfo()
           {
                foreach (Item item in EquiptedItems)
@@ -166,8 +151,8 @@ namespace TextRPG
 
           public void Update()
           {
-               atk += (0.5f * (Level - 1));
-               def += (1f * (Level - 1));
+               atk = 10 + (0.5f * (Level - 1));
+               def = 5 + (1f * (Level - 1));
 
                if (EquiptedItems[(int)ItemType.Weapon] != null)
                     Attack = atk + EquiptedItems[(int)ItemType.Weapon].Value;
@@ -183,33 +168,58 @@ namespace TextRPG
 
                if (Level < maxLevel)
                {
-                    if (Exp > RequireExp[Level - 1])
-                    {
-                         LevelUp();
-                    }
+                    LevelUp();
                }
           }
 
           public void LevelUp()
           {
-               Console.ForegroundColor = ConsoleColor.Cyan;
+               int beforeLevel = Level;
+               float beforeAtk = atk;
+               float beforeDef = def;
 
-               Console.WriteLine("레벨업!!");
-               Console.Write($"{"Level: ",-10}{Level,-5} => ");
-               Exp -= RequireExp[Level - 1];
-               Level++;
-               Console.WriteLine(Level);
+               while (Exp > RequireExp[Level - 1])
+               {
+                    Exp -= RequireExp[Level - 1];
+                    Level++;
+                    atk += 0.5f;
+                    def += 1f;
 
-               Console.Write($"{"기본 공격력 : ",-10}{atk,-5} => ");
-               atk += 0.5f;
-               Console.WriteLine(atk);
+                    if (Exp > RequireExp[Level - 1])
+                         continue;
 
-               Console.Write($"{"기본 방어력 : ",-10}{def,-5} => ");
-               def += 1f;
-               Console.WriteLine(def);
-               Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Cyan;
 
-               Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("레벨업!!");
+                    Console.Write($"{"Level: ",-10}{beforeLevel,-5} => ");  // 이전 레벨
+                    Console.WriteLine(Level);
+                    Console.Write($"{"기본 공격력 : ",-10}{beforeAtk,-5} => ");  // 이전 공격력
+                    Console.WriteLine(atk);
+                    Console.Write($"{"기본 방어력 : ",-10}{beforeDef,-5} => ");  // 이전 방어력
+                    Console.WriteLine(def);
+                    Console.WriteLine();
+
+                    Console.ForegroundColor = ConsoleColor.White;
+               }
+
+               //Console.ForegroundColor = ConsoleColor.Cyan;
+
+               //Console.WriteLine("레벨업!!");
+               //Console.Write($"{"Level: ",-10}{Level,-5} => ");
+               //Exp -= RequireExp[Level - 1];
+               //Level++;
+               //Console.WriteLine(Level);
+
+               //Console.Write($"{"기본 공격력 : ",-10}{atk,-5} => ");
+               //atk += 0.5f;
+               //Console.WriteLine(atk);
+
+               //Console.Write($"{"기본 방어력 : ",-10}{def,-5} => ");
+               //def += 1f;
+               //Console.WriteLine(def);
+               //Console.WriteLine();
+
+               //Console.ForegroundColor = ConsoleColor.White;
           }
      }
 }

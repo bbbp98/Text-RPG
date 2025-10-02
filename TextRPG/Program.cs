@@ -9,7 +9,7 @@ using TextRPG.Scenes;
 
 namespace TextRPG
 {
-    internal class Program
+     internal class Program
      {
           public enum SceneNames
           {
@@ -58,6 +58,7 @@ namespace TextRPG
 
                while (isRunning)
                {
+                    character.Update();
                     currentScene!.Show();
                     Console.WriteLine();
                     Console.WriteLine("원하시는 행동을 입력해주세요.");
@@ -65,7 +66,6 @@ namespace TextRPG
                     byte input = byte.TryParse(Console.ReadLine(), out byte val) ? val : byte.MaxValue;  // check input, if TryParse return false => go to case default
                     Console.Clear();
                     currentScene.HandleInput(input);
-                    character.Update();
                }
           }
 
@@ -120,8 +120,10 @@ namespace TextRPG
                     character.EquiptedItems[(int)ItemType.Armor] = character.Inventory[0];
                     character.EquiptedItems[(int)ItemType.Weapon] = character.Inventory[1];
 
-                    Console.Clear();
                }
+
+               Console.ForegroundColor = ConsoleColor.White;
+               Console.Clear();
 
                // scene initialize
                currentScene = new StartScene(character);
@@ -131,7 +133,7 @@ namespace TextRPG
           {
                return currentScene!;
           }
-          
+
           static public void SetScene(Scene scene)
           {
                currentScene = scene;
@@ -156,7 +158,7 @@ namespace TextRPG
           {
                nowDungeon = dungeon;
           }
-          
+
           static public void SetRunning(bool able)
           {
                isRunning = able;
