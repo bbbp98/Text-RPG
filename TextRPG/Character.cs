@@ -13,18 +13,47 @@ namespace TextRPG
      internal class Character
      {
           // 기본 캐릭터 스탯
-          private int atk = 10;
-          private int def = 5;
+          private int maxHp = 200;
+          private int hp = 0;
+          private int maxStamina = 100;
+          private int stamina = 0;
+          private float atk = 10;
+          private float def = 5;
+          int[] RequireExp = { 50, 80, 150, 500 };
 
           int Level { get; set; }
-          public int Attack { get; set; }
-          public int Defence { get; set; }
-          public int Hp { get; set; }
+          public float Attack { get; set; }
+          public float Defence { get; set; }
+
 
           public int Gold { get; set; }
           public int Exp { get; set; }
-          public int Stamina { get; set; }
-
+          public int Hp
+          {
+               get
+               { return hp; }
+               set
+               {
+                    hp = value;
+                    if (hp > maxHp)
+                         hp = maxHp;
+                    else if (hp < 0)
+                         hp = 0;
+               }
+          }
+          public int Stamina
+          {
+               get
+               { return stamina; }
+               set
+               {
+                    stamina = value;
+                    if (stamina > maxStamina)
+                         stamina = maxStamina;
+                    else if (stamina < 0)
+                         stamina = 0;
+               }
+          }
 
           string Name { get; set; }
           string Job { get; set; }
@@ -38,10 +67,12 @@ namespace TextRPG
                Job = job;
                Attack = atk;
                Defence = def;
-               Hp = 100;
-               Gold = 15000;
+               hp = maxHp;
+               //hp = 10;
+               Gold = 1000;
                Exp = 0;
-               Stamina = 100;
+               stamina = maxStamina;
+               //stamina = 10;
 
                EquiptedItems = new List<Item>();
           }
@@ -93,6 +124,20 @@ namespace TextRPG
           {
                Attack = atk + EquiptedItems[(int)ItemType.Weapon].Value;
                Defence = def + EquiptedItems[(int)ItemType.Armor].Value;
+
+               if (Exp > RequireExp[Level - 1])
+               {
+                    LevelUp();
+               }
+          }
+
+          private void LevelUp()
+          {
+               Exp -= RequireExp[Level - 1];
+               Level++;
+
+               atk += 0.5f;
+               def += 1f;
           }
      }
 }

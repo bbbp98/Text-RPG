@@ -21,6 +21,7 @@ namespace TextRPG
                SellingItemScene,
                DungeonEntranceScene,
                DungeonClearScene,
+               RestScene,
           }
 
           const string WELCOME_MESSAGE =
@@ -122,6 +123,9 @@ namespace TextRPG
                     case Scene.DungeonClearScene:
                          DungeonClearScene();
                          break;
+                    case Scene.RestScene:
+                         RestScene();
+                         break;
                }
 
 
@@ -182,6 +186,9 @@ namespace TextRPG
                     case Scene.DungeonClearScene:
                          DungeonClearSceneInput(input);
                          break;
+                    case Scene.RestScene:
+                         RestSceneInput(input);
+                         break;
                }
           }
 
@@ -197,6 +204,7 @@ namespace TextRPG
                Console.WriteLine("5. 훈련하기");
                Console.WriteLine("6. 상점");
                Console.WriteLine("7. 던전입장");
+               Console.WriteLine("8. 휴식하기");
                Console.WriteLine("0. 종료하기");
 
                Console.WriteLine();
@@ -231,6 +239,9 @@ namespace TextRPG
                          break;
                     case 7:
                          scene = Scene.DungeonEntranceScene;
+                         break;
+                    case 8:
+                         scene = Scene.RestScene;
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -897,11 +908,29 @@ namespace TextRPG
                Random rand = new Random();
                // 20 ~ 35 랜덤으로 체력 감소
                int hpDecrease = rand.Next(20, 36);
-               int defDiff = nowDungeon.RequiredDef - character.Defence;
+               float defDiff = nowDungeon.RequiredDef - character.Defence;
+               // hpDecrease : 감소될 체력량
+               hpDecrease += (int)defDiff;
 
                // 던전 입장으로 소모되는 체력
                int hpBefore = character.Hp;
-               character.Hp -= (hpDecrease + defDiff);
+               character.Hp -= hpDecrease;
+
+               //if (character.Hp < hpDecrease)
+               //{
+               //     Console.ForegroundColor = ConsoleColor.Red;
+               //     Console.WriteLine("체력이 없습니다.");
+               //     Console.WriteLine();
+               //     Console.ForegroundColor = ConsoleColor.White;
+
+               //     scene = Scene.DungeonEntranceScene;
+               //     DungeonEntranceScene();
+
+               //     return;
+               //}
+
+               if (character.Hp < 0)
+                    character.Hp = 0;
 
                // 권장 방어력보다 낮은 경우
                if (defDiff > 0)
@@ -928,12 +957,15 @@ namespace TextRPG
                }
 
                // clear
-               float bonus = rand.Next(character.Attack, character.Attack * 2) * 0.01f;
+
+               // Random().NextDouble() : 0.0 ~ 1.0 사이 랜덤 값 반환
+               float bonus = (float)((rand.NextDouble() * character.Attack) + character.Attack);
+               bonus *= 0.01f;
                bonus = nowDungeon.RewardGold * bonus;
-               float clearGold = nowDungeon.RewardGold + bonus;
+               int clearGold = nowDungeon.RewardGold + (int)bonus;
 
                int goldBefore = character.Gold;
-               character.Gold += (int)clearGold;
+               character.Gold += clearGold;
                character.Exp += nowDungeon.RewardExp;
 
                Console.WriteLine("던전 클리어");
@@ -968,5 +1000,52 @@ namespace TextRPG
                }
           }
 
+          static void RestScene()
+          {
+               int price = 500;
+
+               Console.WriteLine("휴식하기");
+               Console.Write($"{price} G 를 내면 체력을 회복할 수 있습니다.");
+               Console.WriteLine($" (보유 골드 : {character.Gold} G)");
+               Console.WriteLine();
+
+               Console.WriteLine("1. 휴식하기");
+               Console.WriteLine("0. 나가기");
+               Console.WriteLine();
+          }
+
+          static void RestSceneInput(byte input)
+          {
+               int price = 500;
+
+               switch (input)
+               {
+                    case 0:
+                         scene = Scene.StartScene;
+                         break;
+                    case 1:
+                         if (character.Gold >= price)
+                         {
+                              Console.WriteLine("휴식을 완료했습니다.");
+                              Console.WriteLine();
+                              character.Gold -= price;
+                              character.Hp += 100;
+                              character.Stamina += 20;
+                         }
+                         else
+                         {
+                              Console.ForegroundColor = ConsoleColor.Red;
+                              Console.WriteLine("Gold가 부족합니다.");
+                              Console.ForegroundColor = ConsoleColor.White; ;
+                              Console.WriteLine();
+                         }
+                         break;
+                    default:
+                         Console.ForegroundColor = ConsoleColor.Red;
+                         Console.WriteLine("잘못된 입력입니다.\n");
+                         Console.ForegroundColor = ConsoleColor.White;
+                         break;
+               }
+          }
      }
 }
