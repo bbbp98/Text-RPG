@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,14 +15,14 @@ namespace TextRPG
      internal class Character
      {
           // 기본 캐릭터 스탯
-          int maxLevel = 5;
-          int maxHp = 200;
-          int nowHp = 0;
-          int maxStamina = 100;
-          int nowStamina = 0;
-          float atk = 10;
-          float def = 5;
-          int[] RequireExp = { 50, 80, 150, 500 };
+          private int maxLevel = 5;
+          private int maxHp = 200;
+          private int nowHp = 0;
+          private int maxStamina = 100;
+          private int nowStamina = 0;
+          private int[] RequireExp = { 50, 80, 150, 500 };
+          private float atk = 10;
+          private float def = 5;
 
           public int Level { get; set; }
           public float Attack { get; set; }
@@ -122,11 +124,11 @@ namespace TextRPG
                     if (item != null && item.Type == ItemType.Armor)
                          Defence = def + item.Value;
                }
-
+               
                Console.WriteLine($"Lv. {Level}");
                Console.WriteLine($"{Name} ( {Job} )");
 
-               Console.Write($"공격력 : {Attack} ");
+               Console.Write($"공격력 : {(float)Attack} ");
                if (EquiptedItems[(int)ItemType.Weapon] != null)
                {
                     if (EquiptedItems[(int)ItemType.Weapon].Value > 0)
@@ -139,7 +141,7 @@ namespace TextRPG
                }
 
 
-               Console.Write($"방어력 : {Defence} ");
+               Console.Write($"방어력 : {(float)Defence} ");
                if (EquiptedItems[(int)ItemType.Armor] != null)
                {
                     if (EquiptedItems[(int)ItemType.Armor].Value > 0)
@@ -164,15 +166,20 @@ namespace TextRPG
 
           public void Update()
           {
+               atk += (0.5f * (Level - 1));
+               def += (1f * (Level - 1));
+
                if (EquiptedItems[(int)ItemType.Weapon] != null)
                     Attack = atk + EquiptedItems[(int)ItemType.Weapon].Value;
                else
                     Attack = atk;
 
+
                if (EquiptedItems[(int)ItemType.Armor] != null)
                     Defence = def + EquiptedItems[(int)ItemType.Armor].Value;
                else
                     Defence = def;
+
 
                if (Level < maxLevel)
                {
