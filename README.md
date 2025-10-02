@@ -7,7 +7,7 @@ C#으로 만드는 Text Game입니다.
 
 
 ## 실행 화면
-[![영상 보러가기](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG_ScreenShot.png))](https://youtu.be/r2sPghPYIhM)
+[![영상 보러가기](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG_ScreenShot.png)](https://youtu.be/r2sPghPYIhM)
 
 
 ## 구현 목록
