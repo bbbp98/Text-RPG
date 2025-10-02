@@ -10,6 +10,9 @@ C#으로 만드는 Text Game입니다.
 ![ ](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG_ScreenShot.png)
 
 
+![시연 영상](https://youtu.be/r2sPghPYIhM)
+
+
 ## 구현 목록
 0. Main()
 - bool타입 변수 isRunning이 참인 동안 무한 반복문을 돌립니다.

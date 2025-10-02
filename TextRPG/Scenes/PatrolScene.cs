@@ -43,6 +43,7 @@ namespace TextRPG.Scenes
                     Console.WriteLine();
 
                     SetScene(new StartScene(character));
+                    GetCurrentScene().Show();
 
                     return;
                }

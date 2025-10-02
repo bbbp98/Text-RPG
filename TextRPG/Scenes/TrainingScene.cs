@@ -36,11 +36,14 @@ namespace TextRPG.Scenes
           {
                if (character.CheckStamina(needStamina) == false)
                {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("스태미나가 부족합니다.");
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine();
 
                     SetScene(new StartScene(character));
                     GetCurrentScene().Show();
+
                     return;
                }
 
