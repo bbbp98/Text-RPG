@@ -34,7 +34,7 @@ while (isRunning)
 
 1. 캐릭터 정보 만들기
 - Character 클래스를 만들어서 관리합니다.
-- [캐릭터 링크](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Character.cs)
+- [Character.cs](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Character.cs)
 
 -----------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ while (isRunning)
 3. 아이템 장착
 - 아이템 옆에 표시된 숫자를 입력하면 캐릭터에게 아이템이 장착됩니다.
 - 장착된 아이템은 '[E]' 문자가 표시됩니다.
-- [아이템 장착 링크](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/EquipmentScene.cs)
+- [EquipmentScene.cs](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/EquipmentScene.cs)
 
 -----------------------------------------------------------------------------
 
@@ -63,9 +63,9 @@ while (isRunning)
 - 아이템 구매 시 보유 중인 골드가 적다면 '금액이 부족'하다는 텍스트를 출력합니다.
 - 이미 보유 중인 아이템을 구매하면 '보유 중'이라는 텍스트를 출력합니다.
 - 아이템 판매 시 장착 중인 아이템이라면 판매 후 장착 해제됩니다.
-- [상점 링크](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/ShopScene.cs) / 
-[아이템 판매 링크](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/PurchaseItemScene.cs) / 
-[아이템 구매 링크](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/SellingItemScene.cs)
+- [ShopScene.cs](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/ShopScene.cs)
+- [PurchaseItemScene.cs](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/PurchaseItemScene.cs) 
+- [SellingItemScene.cs](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/SellingItemScene.cs)
 
 -----------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ while (isRunning)
 - 던전은 3가지 난이도가 있습니다.
 - 난이도마다 권장 방어력이 있고, 권장 방어력보다 낮다면 40% 확률로 던전을 실패합니다.
 - 던전을 클리어하면 골드와 경험치를 얻습니다.
-- [던전 링크](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/DungeonClearScene.cs)
+- [DungeonClearScene.cs](https://github.com/bbbp98/Text-RPG/blob/main/TextRPG/Scenes/DungeonClearScene.cs)
 
 -----------------------------------------------------------------------------
 
