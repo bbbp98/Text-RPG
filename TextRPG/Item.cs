@@ -13,10 +13,16 @@ namespace TextRPG
           public ItemType Type { get; set; }
           public int Value { get; set; }
           public int Price { get; set; }
-          string Description { get; set; }
+          public string Description { get; set; }
 
           public bool IsEquipped { get; set; }
           public bool HasItem { get; set; }
+
+          public Item()
+          {
+               Name = "";
+               Description = "";
+          }
 
           public Item(ItemType type, ItemIndexes index)
           {
@@ -53,7 +59,7 @@ namespace TextRPG
                Console.WriteLine();
           }
 
-          public void ShowInfo(Program.Scene scene)
+          public void ShowInfo(Program.SceneNames scene)
           {
                string[] valueType =
                {
@@ -66,15 +72,15 @@ namespace TextRPG
                Console.Write($"{Description,-30}");
                Console.Write("| ");
 
-               if (scene == Program.Scene.ShopScene
-                    || scene == Program.Scene.PurchaseItemScene)
+               if (scene == Program.SceneNames.ShopScene
+                    || scene == Program.SceneNames.PurchaseItemScene)
                {
                     if (HasItem)
                          Console.Write("구매 완료");
                     else
                          Console.Write($"{Price} G");
                }
-               else if (scene == Program.Scene.SellingItemScene)
+               else if (scene == Program.SceneNames.SellingItemScene)
                {
                     Console.Write($"{(int)(Price * 0.85f)} G");
                }

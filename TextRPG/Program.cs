@@ -1,12 +1,16 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Text;
+using System.Text.Json;
+using System.Xml.Linq;
 
 namespace TextRPG
 {
      internal class Program
      {
-          public enum Scene
+          public enum SceneNames
           {
                StartScene,
                PlayerInfoScene,
@@ -24,27 +28,40 @@ namespace TextRPG
                RestScene,
           }
 
+          const string playerSaveData = "player.json";
+          const string itemSaveData = "items.json";
+
           const string WELCOME_MESSAGE =
           "스파르타 마을에 오신 여러분 환영합니다.\n" +
           "이곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.\n";
 
           static private bool isRunning = true;
-          static private Scene scene = Scene.StartScene;
+          static private SceneNames scene = SceneNames.StartScene;
 
-          static Character character = new Character("Chad", "전사");
+          static Character character = new Character();
 
+          // scene list
+          //static List<Scene> scenes = new List<Scene>();
           // dungeon list
           static List<Dungeon> dungeons = new List<Dungeon>();
-          static Dungeon nowDungeon;
+          static Dungeon nowDungeon = new Dungeon();
 
           // item list
-          static List<Item> inventory = new List<Item>();
           static List<Item> items = new List<Item>();
+          
 
           static int needStamina = 0;
 
           static void Main(string[] args)
           {
+               Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+               var cp949 = Encoding.GetEncoding(949);
+               Console.InputEncoding = cp949;
+               Console.OutputEncoding = cp949;
+
+               // scene initialize
+               //scenes.Add(new StartScene());
+
                // dungeon initialize
                foreach (Difficulty diff in Enum.GetValues(typeof(Difficulty)))
                {
@@ -60,23 +77,46 @@ namespace TextRPG
                          items.Add(new Item(ItemType.Weapon, idx));
                }
 
-               // 기본 장비 장착
+               if (File.Exists(itemSaveData))
+               {
+                    string json = File.ReadAllText(itemSaveData);
+                    items = JsonSerializer.Deserialize<List<Item>>(json)!;
+               }
 
-               inventory.Add(items[(int)ItemIndexes.NoviceArmor]);
-               inventory[0].HasItem = true;
-               inventory[0].IsEquipped = true;
-               inventory.Add(items[(int)ItemIndexes.OldSword]);
-               inventory[1].HasItem = true;
-               inventory[1].IsEquipped = true;
+               // 파일 존재 확인
+               if (File.Exists(playerSaveData))
+               {
+                    string json = File.ReadAllText(playerSaveData);
+                    character = JsonSerializer.Deserialize<Character>(json)!;
+               }
+               else
+               {
+                    Console.Write("이름을 입력하세요: ");
+                    string name = Console.ReadLine() ?? "";
 
-               character.EquiptedItems.Add(inventory[0]);
-               character.EquiptedItems.Add(inventory[1]);
+                    Console.Write("직업을 입력하세요: ");
+                    string job = Console.ReadLine() ?? "";
+
+                    character = new Character(name, job);
+                    character.Inventory.Add(items[(int)ItemIndexes.NoviceArmor]);
+                    character.Inventory[0].HasItem = true;
+                    character.Inventory[0].IsEquipped = true;
+
+                    character.Inventory.Add(items[(int)ItemIndexes.OldSword]);
+                    character.Inventory[1].HasItem = true;
+                    character.Inventory[1].IsEquipped = true;
+
+                    character.EquiptedItems[(int)ItemType.Armor] = character.Inventory[0];
+                    character.EquiptedItems[(int)ItemType.Weapon] = character.Inventory[1];
+               }
+
+               Console.Clear();
 
                while (isRunning)
                {
                     PrintBehaviorList();
                     InputBehavior();
-                    character.Update();
+                    character!.Update();
                }
           }
 
@@ -84,46 +124,46 @@ namespace TextRPG
           {
                switch (scene)
                {
-                    case Scene.StartScene:
+                    case SceneNames.StartScene:
                          StartScene();
                          break;
-                    case Scene.PlayerInfoScene:
+                    case SceneNames.PlayerInfoScene:
                          PlayerInfoScene();
                          break;
-                    case Scene.InventoryScene:
+                    case SceneNames.InventoryScene:
                          InventoryScene();
                          break;
-                    case Scene.InventorySortScene:
+                    case SceneNames.InventorySortScene:
                          InventorySortScene();
                          break;
-                    case Scene.EquipmentScene:
+                    case SceneNames.EquipmentScene:
                          EquipmentScene();
                          break;
-                    case Scene.AdventureScene:
+                    case SceneNames.AdventureScene:
                          AdventureScene();
                          break;
-                    case Scene.PatrolScene:
+                    case SceneNames.PatrolScene:
                          PatrolScene();
                          break;
-                    case Scene.TrainingScene:
+                    case SceneNames.TrainingScene:
                          TrainingScene();
                          break;
-                    case Scene.ShopScene:
+                    case SceneNames.ShopScene:
                          ShopScene();
                          break;
-                    case Scene.PurchaseItemScene:
+                    case SceneNames.PurchaseItemScene:
                          PurchaseItemScene();
                          break;
-                    case Scene.SellingItemScene:
+                    case SceneNames.SellingItemScene:
                          SellingItemScene();
                          break;
-                    case Scene.DungeonEntranceScene:
+                    case SceneNames.DungeonEntranceScene:
                          DungeonEntranceScene();
                          break;
-                    case Scene.DungeonClearScene:
+                    case SceneNames.DungeonClearScene:
                          DungeonClearScene();
                          break;
-                    case Scene.RestScene:
+                    case SceneNames.RestScene:
                          RestScene();
                          break;
                }
@@ -147,46 +187,46 @@ namespace TextRPG
                // scene 별로 입력에 대한 함수 실행
                switch (scene)
                {
-                    case Scene.StartScene:
+                    case SceneNames.StartScene:
                          StartSceneInput(input);
                          break;
-                    case Scene.PlayerInfoScene:
+                    case SceneNames.PlayerInfoScene:
                          PlayerInfoSceneInput(input);
                          break;
-                    case Scene.InventoryScene:
+                    case SceneNames.InventoryScene:
                          InventorySceneInput(input);
                          break;
-                    case Scene.InventorySortScene:
+                    case SceneNames.InventorySortScene:
                          InventorySortSceneInput(input);
                          break;
-                    case Scene.EquipmentScene:
+                    case SceneNames.EquipmentScene:
                          EquipmentSceneInput(input);
                          break;
-                    case Scene.AdventureScene:
+                    case SceneNames.AdventureScene:
                          AdventureSceneInput(input);
                          break;
-                    case Scene.PatrolScene:
+                    case SceneNames.PatrolScene:
                          PatrolSceneInput(input);
                          break;
-                    case Scene.TrainingScene:
+                    case SceneNames.TrainingScene:
                          TrainingSceneInput(input);
                          break;
-                    case Scene.ShopScene:
+                    case SceneNames.ShopScene:
                          ShopSceneInput(input);
                          break;
-                    case Scene.PurchaseItemScene:
+                    case SceneNames.PurchaseItemScene:
                          PurchaseItemSceneInput(input);
                          break;
-                    case Scene.SellingItemScene:
+                    case SceneNames.SellingItemScene:
                          SellingItemSceneInput(input);
                          break;
-                    case Scene.DungeonEntranceScene:
+                    case SceneNames.DungeonEntranceScene:
                          DungeonEntranceSceneInput(input);
                          break;
-                    case Scene.DungeonClearScene:
+                    case SceneNames.DungeonClearScene:
                          DungeonClearSceneInput(input);
                          break;
-                    case Scene.RestScene:
+                    case SceneNames.RestScene:
                          RestSceneInput(input);
                          break;
                }
@@ -205,8 +245,9 @@ namespace TextRPG
                Console.WriteLine("6. 상점");
                Console.WriteLine("7. 던전입장");
                Console.WriteLine("8. 휴식하기");
-               Console.WriteLine("0. 종료하기");
-
+               Console.WriteLine();
+               Console.WriteLine("9. 저장");
+               Console.WriteLine("0. 저장 후 종료");
                Console.WriteLine();
           }
 
@@ -217,31 +258,35 @@ namespace TextRPG
                {
                     case 0:
                          Console.WriteLine("게임을 종료합니다.\n");
+                         Save();
                          isRunning = false;
                          break;
                     case 1:
-                         scene = Scene.PlayerInfoScene;
+                         scene = SceneNames.PlayerInfoScene;
                          break;
                     case 2:
-                         scene = Scene.InventoryScene;
+                         scene = SceneNames.InventoryScene;
                          break;
                     case 3:
-                         scene = Scene.AdventureScene;
+                         scene = SceneNames.AdventureScene;
                          break;
                     case 4:
-                         scene = Scene.PatrolScene;
+                         scene = SceneNames.PatrolScene;
                          break;
                     case 5:
-                         scene = Scene.TrainingScene;
+                         scene = SceneNames.TrainingScene;
                          break;
                     case 6:
-                         scene = Scene.ShopScene;
+                         scene = SceneNames.ShopScene;
                          break;
                     case 7:
-                         scene = Scene.DungeonEntranceScene;
+                         scene = SceneNames.DungeonEntranceScene;
                          break;
                     case 8:
-                         scene = Scene.RestScene;
+                         scene = SceneNames.RestScene;
+                         break;
+                    case 9:
+                         Save();
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -271,7 +316,7 @@ namespace TextRPG
                {
                     case 0:
                          //Console.WriteLine("마을로 돌아갑니다.");
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -292,7 +337,7 @@ namespace TextRPG
                Console.WriteLine("[아이템 목록]");
                Console.WriteLine();
 
-               foreach (Item item in inventory)
+               foreach (Item item in character.Inventory)
                {
                     item.ShowInfo();
                }
@@ -310,13 +355,13 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     case 1:
-                         scene = Scene.EquipmentScene;
+                         scene = SceneNames.EquipmentScene;
                          break;
                     case 2:
-                         scene = Scene.InventorySortScene;
+                         scene = SceneNames.InventorySortScene;
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -336,7 +381,7 @@ namespace TextRPG
                Console.WriteLine("[아이템 목록]");
                Console.WriteLine();
 
-               foreach (Item item in inventory)
+               foreach (Item item in character.Inventory)
                {
                     item.ShowInfo();
                }
@@ -357,14 +402,14 @@ namespace TextRPG
                {
                     // 정렬 타입 선택
                     case 0:
-                         scene = Scene.InventoryScene;
+                         scene = SceneNames.InventoryScene;
                          break;
                     case 1:
                          // 이름순 정렬
                          // 람다식 버전
                          //itemLists.Sort((x, y) => x.Name.CompareTo(y.Name));
 
-                         inventory = inventory.OrderBy(p => p.Name).ToList();
+                         character.Inventory = character.Inventory.OrderBy(p => p.Name).ToList();
                          break;
                     case 2:
                          // 장착순 정렬
@@ -374,16 +419,16 @@ namespace TextRPG
                          // 람다식에서 x, y 위치에 따라 true먼저, false먼저 결정 가능
 
                          // LINQ .OrderBy버전
-                         inventory = inventory.OrderByDescending(p => p.IsEquipped).ToList();
+                         character.Inventory = character.Inventory.OrderByDescending(p => p.IsEquipped).ToList();
                          break;
                     case 3:
                          // ThenBy를 사용하면 조건을 추가할 수 있음
                          // ~~Descending을 사용하면 내림차순으로 바꿀 수 있음
                          // 기본 OrderBy, ThenBy는 오름차순
-                         inventory = inventory.OrderByDescending(p => p.Type).ThenByDescending(p => p.Value).ToList();
+                         character.Inventory = character.Inventory.OrderByDescending(p => p.Type).ThenByDescending(p => p.Value).ToList();
                          break;
                     case 4:
-                         inventory = inventory.OrderBy(p => p.Type).ThenByDescending(p => p.Value).ToList();
+                         character.Inventory = character.Inventory.OrderBy(p => p.Type).ThenByDescending(p => p.Value).ToList();
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -404,7 +449,7 @@ namespace TextRPG
                Console.WriteLine();
 
                int i = 1;
-               foreach (Item item in inventory)
+               foreach (Item item in character.Inventory)
                {
                     Console.Write($"- {i++} ");
                     item.ShowInfo();
@@ -423,13 +468,13 @@ namespace TextRPG
                int select = 0;
 
                if (input > 0)
-                    select = (int)inventory[input - 1].Type;
+                    select = (int)character.Inventory[input - 1].Type;
 
                // 장착하면 무조건 그 장비가 장착, 기존에 장착 중이던 장비는 해제
                switch (input)
                {
                     case 0:
-                         scene = Scene.InventoryScene;
+                         scene = SceneNames.InventoryScene;
                          break;
                     case 1:
                     case 2:
@@ -439,8 +484,11 @@ namespace TextRPG
                     case 6:
                          // 장비 교체
                          if (character.EquiptedItems[select] != null) // character.EquiptedItems에 null이 있을 때 처리
+                         {
                               character.EquiptedItems[select].IsEquipped = false;
-                         character.EquiptedItems[select] = inventory[input - 1];
+                              character.Inventory.Find(i => i.Name == character.EquiptedItems[select].Name)!.IsEquipped = false;
+                         }
+                         character.EquiptedItems[select] = character.Inventory[input - 1];
                          character.EquiptedItems[select].IsEquipped = true;
                          break;
                     default:
@@ -461,7 +509,7 @@ namespace TextRPG
                     Console.WriteLine("스태미나가 부족합니다.");
                     Console.WriteLine();
 
-                    scene = Scene.StartScene;
+                    scene = SceneNames.StartScene;
                     StartScene();
 
                     return;
@@ -480,7 +528,7 @@ namespace TextRPG
                     Console.WriteLine("아무 일도 일어나지 않았다.\n");
                }
 
-               Console.WriteLine("1. 랜덤 모험");
+               Console.WriteLine("1. 다시하기");
                Console.WriteLine("0. 나가기");
                Console.WriteLine();
           }
@@ -491,7 +539,7 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     case 1:
                          break;
@@ -513,7 +561,7 @@ namespace TextRPG
                     Console.WriteLine("스태미나가 부족합니다.");
                     Console.WriteLine();
 
-                    scene = Scene.StartScene;
+                    scene = SceneNames.StartScene;
                     StartScene();
 
                     return;
@@ -559,7 +607,7 @@ namespace TextRPG
                }
                Console.WriteLine();
 
-               Console.WriteLine("1. 마을 순찰하기");
+               Console.WriteLine("1. 다시하기");
                Console.WriteLine("0. 나가기");
                Console.WriteLine();
           }
@@ -570,7 +618,7 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     case 1:
                          break;
@@ -592,7 +640,7 @@ namespace TextRPG
                     Console.WriteLine("스태미나가 부족합니다.");
                     Console.WriteLine();
 
-                    scene = Scene.StartScene;
+                    scene = SceneNames.StartScene;
                     StartScene();
 
                     return;
@@ -623,7 +671,7 @@ namespace TextRPG
                Console.WriteLine($"경험치를 {gettingExp} 획득했습니다.");
 
                Console.WriteLine();
-               Console.WriteLine("1. 훈련하기");
+               Console.WriteLine("1. 다시하기");
                Console.WriteLine("0. 나가기");
                Console.WriteLine();
           }
@@ -634,7 +682,7 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     case 1:
                          break;
@@ -678,13 +726,13 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     case 1:
-                         scene = Scene.PurchaseItemScene;
+                         scene = SceneNames.PurchaseItemScene;
                          break;
                     case 2:
-                         scene = Scene.SellingItemScene;
+                         scene = SceneNames.SellingItemScene;
                          break;
                     default:
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -726,7 +774,7 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.ShopScene;
+                         scene = SceneNames.ShopScene;
                          break;
                     case 1:
                     case 2:
@@ -764,7 +812,7 @@ namespace TextRPG
                          character.Gold -= item.Price;
 
                          item.HasItem = true;
-                         inventory.Add(item);
+                         character.Inventory.Add(item);
                          Console.WriteLine($"{item.Name}을(를) 구매했습니다.");
                          Console.WriteLine();
                     }
@@ -793,7 +841,7 @@ namespace TextRPG
 
                Console.WriteLine("[아이템 목록]");
                int i = 1;
-               foreach (Item item in inventory)
+               foreach (Item item in character.Inventory)
                {
                     Console.Write($"- {i++} ");
                     item.ShowInfo(scene);
@@ -810,7 +858,7 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.ShopScene;
+                         scene = SceneNames.ShopScene;
                          break;
                     case 1:
                     case 2:
@@ -833,7 +881,7 @@ namespace TextRPG
           static void Selling(byte input)
           {
                // 인벤토리에 아이템이 없는데 입력이 들어올 경우
-               if (inventory.Count == 0)
+               if (character.Inventory.Count == 0)
                {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("판매할 수 있는 아이템이 없습니다.");
@@ -842,7 +890,7 @@ namespace TextRPG
                }
 
 
-               Item item = inventory[input - 1];
+               Item item = character.Inventory[input - 1];
 
                int typeIdx = (int)item.Type;
                // 장착중인 아이템인지 체크
@@ -851,12 +899,13 @@ namespace TextRPG
                {
                     item.IsEquipped = false;
                     item.HasItem = false;
-                    character.EquiptedItems[typeIdx] = null;
+                    character.EquiptedItems[typeIdx] = null!;
                }
 
                int price = (int)(item.Price * 0.85f);
                character.Gold += price;
-               inventory.Remove(item);
+               character.Inventory.Remove(item);
+               items.Find(i => i.Name == item.Name)!.HasItem = false;
                Console.WriteLine($"{item.Name}을(를) 판매했습니다. {price} G를 획득했습니다.");
                Console.WriteLine();
           }
@@ -886,13 +935,13 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     case 1:
                     case 2:
                     case 3:
                          // load dungeon clear scene
-                         scene = Scene.DungeonClearScene;
+                         scene = SceneNames.DungeonClearScene;
                          nowDungeon = dungeons[input - 1];
                          break;
                     default:
@@ -915,19 +964,6 @@ namespace TextRPG
                // 던전 입장으로 소모되는 체력
                int hpBefore = character.Hp;
                character.Hp -= hpDecrease;
-
-               //if (character.Hp < hpDecrease)
-               //{
-               //     Console.ForegroundColor = ConsoleColor.Red;
-               //     Console.WriteLine("체력이 없습니다.");
-               //     Console.WriteLine();
-               //     Console.ForegroundColor = ConsoleColor.White;
-
-               //     scene = Scene.DungeonEntranceScene;
-               //     DungeonEntranceScene();
-
-               //     return;
-               //}
 
                if (character.Hp < 0)
                     character.Hp = 0;
@@ -988,7 +1024,7 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.DungeonEntranceScene;
+                         scene = SceneNames.DungeonEntranceScene;
                          break;
                     case 1:
                          break;
@@ -1021,7 +1057,7 @@ namespace TextRPG
                switch (input)
                {
                     case 0:
-                         scene = Scene.StartScene;
+                         scene = SceneNames.StartScene;
                          break;
                     case 1:
                          if (character.Gold >= price)
@@ -1046,6 +1082,28 @@ namespace TextRPG
                          Console.ForegroundColor = ConsoleColor.White;
                          break;
                }
+          }
+
+          static public void SetRunning(bool able)
+          {
+               isRunning = able;
+          }
+
+          static public void Save()
+          {
+               // save player infomation
+               string saveJson = JsonSerializer.Serialize(character, new JsonSerializerOptions
+               {
+                    WriteIndented = true // JSON 보기 좋게 저장
+               });
+               File.WriteAllText(playerSaveData, saveJson);
+
+               // save items
+               saveJson = JsonSerializer.Serialize(items, new JsonSerializerOptions
+               {
+                    WriteIndented = true
+               });
+               File.WriteAllText(itemSaveData, saveJson);
           }
      }
 }

@@ -16,6 +16,11 @@ namespace TextRPG
           public int RewardGold { get; set; }
           public int RewardExp { get; set; }
 
+          public Dungeon()
+          {
+               Name = "";
+          }
+
           public Dungeon(Difficulty difficulty)
           {
                DungeonData data = new DungeonData();

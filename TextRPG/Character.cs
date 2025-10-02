@@ -13,15 +13,16 @@ namespace TextRPG
      internal class Character
      {
           // 기본 캐릭터 스탯
-          private int maxHp = 200;
-          private int hp = 0;
-          private int maxStamina = 100;
-          private int stamina = 0;
-          private float atk = 10;
-          private float def = 5;
+          int maxLevel = 5;
+          int maxHp = 200;
+          int nowHp = 0;
+          int maxStamina = 100;
+          int nowStamina = 0;
+          float atk = 10;
+          float def = 5;
           int[] RequireExp = { 50, 80, 150, 500 };
 
-          int Level { get; set; }
+          public int Level { get; set; }
           public float Attack { get; set; }
           public float Defence { get; set; }
 
@@ -31,34 +32,49 @@ namespace TextRPG
           public int Hp
           {
                get
-               { return hp; }
+               { return nowHp; }
                set
                {
-                    hp = value;
-                    if (hp > maxHp)
-                         hp = maxHp;
-                    else if (hp < 0)
-                         hp = 0;
+                    nowHp = value;
+                    if (nowHp > maxHp)
+                         nowHp = maxHp;
+                    else if (nowHp < 0)
+                         nowHp = 0;
                }
           }
           public int Stamina
           {
                get
-               { return stamina; }
+               { return nowStamina; }
                set
                {
-                    stamina = value;
-                    if (stamina > maxStamina)
-                         stamina = maxStamina;
-                    else if (stamina < 0)
-                         stamina = 0;
+                    nowStamina = value;
+                    if (nowStamina > maxStamina)
+                         nowStamina = maxStamina;
+                    else if (nowStamina < 0)
+                         nowStamina = 0;
                }
           }
 
-          string Name { get; set; }
-          string Job { get; set; }
+          public string Name { get; set; }
+          public string Job { get; set; }
 
+          public List<Item> Inventory { get; set; }
           public List<Item> EquiptedItems { get; set; }
+
+          public Character()
+          {
+               Name = "";
+               Job = "";
+
+               Inventory = new List<Item>();
+
+               EquiptedItems = new List<Item>
+               {
+                    null!,
+                    null!
+               };
+          }
 
           public Character(string name, string job)
           {
@@ -67,14 +83,33 @@ namespace TextRPG
                Job = job;
                Attack = atk;
                Defence = def;
-               hp = maxHp;
-               //hp = 10;
+               nowHp = maxHp;
                Gold = 1000;
                Exp = 0;
-               stamina = maxStamina;
-               //stamina = 10;
+               nowStamina = maxStamina;
 
-               EquiptedItems = new List<Item>();
+               Inventory = new List<Item>();
+
+               EquiptedItems = new List<Item>
+               {
+                    null!,
+                    null!
+               };
+          }
+
+          public Character(int level, float attack, float defence, int gold, int exp, int hp, int stamina, string name, string job, List<Item> inventory, List<Item> items)
+          {
+               Level = level;
+               Attack = attack;
+               Defence = defence;
+               Gold = gold;
+               Exp = exp;
+               Hp = hp;
+               Stamina = stamina;
+               Name = name;
+               Job = job;
+               Inventory = inventory;
+               EquiptedItems = items;
           }
 
           public void ShowInfo()
@@ -92,20 +127,27 @@ namespace TextRPG
                Console.WriteLine($"{Name} ( {Job} )");
 
                Console.Write($"공격력 : {Attack} ");
-               if (EquiptedItems[(int)ItemType.Weapon].Value > 0)
+               if (EquiptedItems[(int)ItemType.Weapon] != null)
                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write($"(+{EquiptedItems[(int)ItemType.Weapon].Value})");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    if (EquiptedItems[(int)ItemType.Weapon].Value > 0)
+                    {
+                         Console.ForegroundColor = ConsoleColor.Green;
+                         Console.Write($"(+{EquiptedItems[(int)ItemType.Weapon].Value})");
+                         Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    Console.WriteLine();
                }
-               Console.WriteLine();
+
 
                Console.Write($"방어력 : {Defence} ");
-               if (EquiptedItems[(int)ItemType.Armor].Value > 0)
+               if (EquiptedItems[(int)ItemType.Armor] != null)
                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write($"(+{EquiptedItems[(int)ItemType.Armor].Value})");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    if (EquiptedItems[(int)ItemType.Armor].Value > 0)
+                    {
+                         Console.ForegroundColor = ConsoleColor.Green;
+                         Console.Write($"(+{EquiptedItems[(int)ItemType.Armor].Value})");
+                         Console.ForegroundColor = ConsoleColor.White;
+                    }
                }
                Console.WriteLine();
 
@@ -122,22 +164,45 @@ namespace TextRPG
 
           public void Update()
           {
-               Attack = atk + EquiptedItems[(int)ItemType.Weapon].Value;
-               Defence = def + EquiptedItems[(int)ItemType.Armor].Value;
+               if (EquiptedItems[(int)ItemType.Weapon] != null)
+                    Attack = atk + EquiptedItems[(int)ItemType.Weapon].Value;
+               else
+                    Attack = atk;
 
-               if (Exp > RequireExp[Level - 1])
+               if (EquiptedItems[(int)ItemType.Armor] != null)
+                    Defence = def + EquiptedItems[(int)ItemType.Armor].Value;
+               else
+                    Defence = def;
+
+               if (Level < maxLevel)
                {
-                    LevelUp();
+                    if (Exp > RequireExp[Level - 1])
+                    {
+                         LevelUp();
+                    }
                }
           }
 
-          private void LevelUp()
+          public void LevelUp()
           {
+               Console.ForegroundColor = ConsoleColor.Cyan;
+
+               Console.WriteLine("레벨업!!");
+               Console.Write($"{"Level: ",-10}{Level,-5} => ");
                Exp -= RequireExp[Level - 1];
                Level++;
+               Console.WriteLine(Level);
 
+               Console.Write($"{"기본 공격력 : ",-10}{atk,-5} => ");
                atk += 0.5f;
+               Console.WriteLine(atk);
+
+               Console.Write($"{"기본 방어력 : ",-10}{def,-5} => ");
                def += 1f;
+               Console.WriteLine(def);
+               Console.WriteLine();
+
+               Console.ForegroundColor = ConsoleColor.White;
           }
      }
 }
