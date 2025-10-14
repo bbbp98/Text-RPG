@@ -22,7 +22,8 @@ namespace TextRPG.Scenes
             // 1이 들어오면 0으로
             int select = 0;
 
-            if (input > 0)
+           // need inventory index range check
+            if (input > 0 && input < character.Inventory.Count)
                 select = (int)character.Inventory[input - 1].Type;
 
             // 장착하면 무조건 그 장비가 장착, 기존에 장착 중이던 장비는 해제
